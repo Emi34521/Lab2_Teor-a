@@ -17,3 +17,34 @@ def tokenize(expresion: str) -> list[str]:
             continue
         tokens.append(char)
     return tokens
+
+
+def es_operando(token: str) -> bool:
+    """True si el token es un símbolo del alfabeto (no operador/agrupación)."""
+    return token not in OPERADORES
+
+
+def puede_terminar_operando(token: str) -> bool:
+    """True si tras este token puede ir una concatenación implícita."""
+    return es_operando(token) or token in (')', '*')
+
+
+def puede_iniciar_operando(token: str) -> bool:
+    """True si este token puede iniciar el segundo factor de una concatenación."""
+    return es_operando(token) or token == '('
+
+
+def insertar_concatenacion_implicita(tokens: list[str]) -> list[str]:
+    """Inserta '.' entre tokens cuando la concatenación está implícita.
+
+    Casos: letra+(, )+(letra|()|(), *+(letra|(). No altera '.' ya explícitos.
+    Ejemplo: (a|b)*abb → ( a | b ) * . a . b . b
+    """
+    resultado = []
+    for token in tokens:
+        if resultado:
+            anterior = resultado[-1]
+            if puede_terminar_operando(anterior) and puede_iniciar_operando(token):
+                resultado.append('.')
+        resultado.append(token)
+    return resultado
