@@ -129,3 +129,15 @@ def describir_postfix(postfix: list[str]) -> list[str]:
         else:
             mensajes.append(f'{token} de')
     return mensajes
+
+
+def procesar_regex(expresion: str) -> None:
+    """Imprime la expresión, su postfix y la descripción derecha→izquierda."""
+    postfix = expresion_a_postfix(expresion)
+    mensajes = describir_postfix(postfix)
+
+    print(f"Expresión regular: {expresion}")
+    print(f"Postfix: {''.join(postfix)}")
+    print("Leyendo de derecha a izquierda:")
+    for i, mensaje in enumerate(mensajes, 1):
+        print(f"  {i}. {mensaje}")
