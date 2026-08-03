@@ -48,3 +48,59 @@ def insertar_concatenacion_implicita(tokens: list[str]) -> list[str]:
                 resultado.append('.')
         resultado.append(token)
     return resultado
+
+
+# Precedencia: | (unión) < . (concat) < * (Kleene, unario postfix)
+PRECEDENCIA = {
+    '|': 1,
+    '.': 2,
+}
+
+
+def shunting_yard_regex(tokens: list[str]) -> list[str]:
+    """Convierte tokens infix de regex a notación postfix (polaca inversa).
+
+    Ejemplo: ( a | b ) * . a . b . b  →  a b | * a . b . b .
+    """
+    salida = []
+    operadores = []
+
+    for token in tokens:
+        if es_operando(token):
+            salida.append(token)
+        elif token == '*':
+            # Unario postfix: se emite de inmediato
+            salida.append(token)
+        elif token in PRECEDENCIA:
+            while (
+                operadores
+                and operadores[-1] in PRECEDENCIA
+                and PRECEDENCIA[operadores[-1]] >= PRECEDENCIA[token]
+            ):
+                salida.append(operadores.pop())
+            operadores.append(token)
+        elif token == '(':
+            operadores.append(token)
+        elif token == ')':
+            while operadores and operadores[-1] != '(':
+                salida.append(operadores.pop())
+            if not operadores or operadores[-1] != '(':
+                raise ValueError("Paréntesis no balanceados: falta '('")
+            operadores.pop()  # descarta '('
+        else:
+            raise ValueError(f"Token no reconocido: {token!r}")
+
+    while operadores:
+        op = operadores.pop()
+        if op == '(':
+            raise ValueError("Paréntesis no balanceados: falta ')'")
+        salida.append(op)
+
+    return salida
+
+
+def expresion_a_postfix(expresion: str) -> list[str]:
+    """Pipeline: tokenizar → concatenación implícita → Shunting Yard."""
+    tokens = tokenize(expresion)
+    tokens = insertar_concatenacion_implicita(tokens)
+    return shunting_yard_regex(tokens)
