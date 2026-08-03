@@ -1,4 +1,4 @@
-import re 
+import re #regex
 
 #función auxiliar que ayuda a "tokenizar" la expresión ingresada 
 def tokenize(expresion):
@@ -14,8 +14,8 @@ def es_numero(token):
     
 # multiplicación implícita 
 def insertar_multiplicacion_implicita(tokens):
-#básicamente inserta un '*' entre un número y un paréntesis o entre un paréntesis de cierre y un número o entre paréntesis de 
-#cierre y apertura
+#básicamente inserta un '*' entre un número y un paréntesis o entre un paréntesis
+#de cierre y un número o entre paréntesis de cierre y apertura
     resultado = []
     for token in tokens:
         if resultado:
@@ -98,12 +98,9 @@ def evaluar_tokens(tokens):
     tokens = resolver_parentesis(tokens)
     postfix = shunting_yard_aritmetica(tokens)
     return evaluar_postfix(postfix)
- 
- 
+
 # función pública: evalúa una expresión en texto
 def evaluar_expresion(expresion):
     tokens = tokenize(expresion)
     tokens = insertar_multiplicacion_implicita(tokens)
     return evaluar_tokens(tokens)
-    
-    
