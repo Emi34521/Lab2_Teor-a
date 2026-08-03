@@ -104,3 +104,28 @@ def expresion_a_postfix(expresion: str) -> list[str]:
     tokens = tokenize(expresion)
     tokens = insertar_concatenacion_implicita(tokens)
     return shunting_yard_regex(tokens)
+
+
+MENSAJES_OPERADOR = {
+    '.': 'Concatenación con',
+    '|': 'Unión con',
+    '*': 'Kleene de',
+}
+
+
+def describir_postfix(postfix: list[str]) -> list[str]:
+    """Lee el postfix de derecha a izquierda y describe cada símbolo.
+
+    Operadores → frase fija; operandos → '{s} de', salvo el último del
+    recorrido (el más a la izquierda del postfix), que es solo '{s}'.
+    """
+    mensajes = []
+    for i, token in enumerate(reversed(postfix)):
+        es_ultimo = i == len(postfix) - 1
+        if token in MENSAJES_OPERADOR:
+            mensajes.append(MENSAJES_OPERADOR[token])
+        elif es_ultimo:
+            mensajes.append(token)
+        else:
+            mensajes.append(f'{token} de')
+    return mensajes
